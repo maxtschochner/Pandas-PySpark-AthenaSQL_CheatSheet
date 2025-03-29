@@ -1,5 +1,23 @@
-# Pandas-PySpark-AthenaSQL_CheatSheet
+## Data Manipulation Cheat Sheet
 
+### Loading Data
+| Operation        | Pandas                            | PySpark                           | AWS Athena SQL                     |
+|-----------------|----------------------------------|----------------------------------|------------------------------------|
+| Read CSV        | `pd.read_csv("s3://bucket/file.csv")` | `spark.read.csv("s3://bucket/file.csv", header=True, inferSchema=True)` | `CREATE EXTERNAL TABLE table (...) ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe' LOCATION 's3://bucket/';` |
+| Read JSON       | `pd.read_json("file.json")`     | `spark.read.json("file.json")`  | `SELECT * FROM json_table;` (via `json` SerDe) |
+| Read SQL Table  | `pd.read_sql("SELECT * FROM table", conn)` | `spark.read.format("jdbc").option(...).load()` | `SELECT * FROM table;` |
+
+### Basic Operations
+| Operation        | Pandas                           | PySpark                           | AWS Athena SQL                     |
+|-----------------|---------------------------------|----------------------------------|------------------------------------|
+| Select Columns  | `df[["col1", "col2"]]`         | `df.select("col1", "col2")`      | `SELECT col1, col2 FROM table;`   |
+| Filter Rows     | `df[df["col"] > 10]`           | `df.filter(df.col > 10)`         | `SELECT * FROM table WHERE col > 10;` |
+| Sort Data       | `df.sort_values("col")`        | `df.orderBy("col")`              | `SELECT * FROM table ORDER BY col;` |
+| Drop Duplicates | `df.drop_duplicates()`         | `df.dropDuplicates()`            | `SELECT DISTINCT * FROM table;`  |
+| Rename Column   | `df.rename(columns={"old": "new"})` | `SELECT old AS new FROM table;` | `SELECT old AS new FROM table;` |
+
+### Aggregations & Grouping
+| Operation        | Pandas                              | PySpark                           | AWS Athena SQL                     |
 |-----------------|----------------------------------|----------------------------------|------------------------------------|
 | Count Rows      | `df.shape[0]` or `len(df)`      | `df.count()`                     | `SELECT COUNT(*) FROM table;`    |
 | Group By        | `df.groupby("col").sum()`       | `df.groupBy("col").sum()`        | `SELECT col, SUM(val) FROM table GROUP BY col;` |
